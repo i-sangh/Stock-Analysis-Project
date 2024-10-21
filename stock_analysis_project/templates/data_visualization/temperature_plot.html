@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="plot-container" style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h1 style="color: #007bff;">Temperature Analysis</h1>
+    <div style="margin-top: 20px;">
+        <img src="data:image/png;base64,{{ graphic }}" alt="Temperature Plot" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    </div>
+</div>
+{% endblock %}

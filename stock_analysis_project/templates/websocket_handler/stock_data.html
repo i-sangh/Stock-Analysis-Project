@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="stock-container" style="max-width: 900px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #007bff; text-align: center; font-size: 24px; margin-bottom: 20px;">Live Stock Data</h1>
+
+    <!-- Debug Information -->
+    <div id="debugInfo" style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+        <p>Connection Status: <span id="connectionStatus" style="font-weight: bold;">Initializing...</span></p>
+        <p>Last Message: <span id="lastMessage" style="font-weight: bold;">None</span></p>
+    </div>
+
+    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 15px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f1f1f1; text-align: left;">
+                    <th style="padding: 12px; font-weight: normal; color: #666;">Symbol</th>
+                    <th style="padding: 12px; font-weight: normal; color: #666;">Price</th>
+                    <th style="padding: 12px; font-weight: normal; color: #666;">Volume</th>
+                    <th style="padding: 12px; font-weight: normal; color: #666;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody">
+                <!-- Data will be populated here dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const connectionStatus = document.getElementById('connectionStatus');
+    const lastMessage = document.getElementById('lastMessage');
+    const tableBody = document.getElementById('stockTableBody');
+    
+    function updateStatus(status) {
+        connectionStatus.textContent = status;
+        console.log('Status updated:', status);
+    }
+
+    function connectWebSocket() {
+        updateStatus('Connecting...');
+        
+        // Use the correct WebSocket URL
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws/stocks/`;
+        console.log('Connecting to:', wsUrl);
+        
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function(e) {
+            console.log('WebSocket connected!');
+            updateStatus('Connected');
+        };
+
+        socket.onmessage = function(e) {
+            console.log('Message received:', e.data);
+            lastMessage.textContent = new Date().toISOString();
+            
+            const data = JSON.parse(e.data);
+            if (data.type === 'stock_update') {
+                data.data.forEach(stock => {
+                    const row = document.createElement('tr');
+                    row.style.backgroundColor = '#ffffff';
+                    row.style.transition = 'background-color 0.3s ease';
+                    row.onmouseover = function() {
+                        row.style.backgroundColor = '#f9f9f9';
+                    };
+                    row.onmouseout = function() {
+                        row.style.backgroundColor = '#ffffff';
+                    };
+                    row.innerHTML = `
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">${stock.symbol}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$${parseFloat(stock.price).toFixed(2)}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">${stock.volume}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">${stock.timestamp}</td>
+                    `;
+                    tableBody.insertBefore(row, tableBody.firstChild);
+                });
+                
+                // Keep only the last 50 rows
+                while (tableBody.children.length > 50) {
+                    tableBody.removeChild(tableBody.lastChild);
+                }
+            }
+        };
+
+        socket.onclose = function(e) {
+            console.log('WebSocket closed:', e);
+            updateStatus('Disconnected - Reconnecting in 5s...');
+            setTimeout(connectWebSocket, 5000);
+        };
+
+        socket.onerror = function(e) {
+            console.error('WebSocket error:', e);
+            updateStatus('Error - Check console');
+        };
+
+        return socket;
+    }
+
+    // Start connection when page loads
+    connectWebSocket();
+</script>
+{% endblock %}

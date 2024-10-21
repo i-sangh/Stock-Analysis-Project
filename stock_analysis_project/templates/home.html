@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 style="text-align: center; color: #007bff;">Welcome to Stock Analysis Project</h1>
+<p style="text-align: center; font-size: 1.1em; color: #555;">
+    This project provides tools for stock data analysis, temperature visualization, and sales analysis.
+</p>
+<ul style="list-style-type: none; padding: 0; max-width: 600px; margin: 20px auto;">
+    <li style="margin-bottom: 10px; text-align: center;">
+        <a href="{% url 'stock_data' %}" style="text-decoration: none; color: #007bff; font-size: 1.2em;">
+            Live Stock Data
+        </a>
+    </li>
+    <li style="margin-bottom: 10px; text-align: center;">
+        <a href="{% url 'temperature_plot' %}" style="text-decoration: none; color: #007bff; font-size: 1.2em;">
+            Temperature Analysis
+        </a>
+    </li>
+    <li style="margin-bottom: 10px; text-align: center;">
+        <a href="{% url 'sales_analysis' %}" style="text-decoration: none; color: #007bff; font-size: 1.2em;">
+            Sales Analysis
+        </a>
+    </li>
+</ul>
+{% endblock %}

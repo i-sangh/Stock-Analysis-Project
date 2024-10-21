@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="sales-container" style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h1 style="color: #007bff;">Sales Analysis</h1>
+    
+    <h2 style="color: #333; margin-top: 30px;">Regional Sales</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; color: #333;">
+                <th style="padding: 10px; border-bottom: 1px solid #ddd;">Region</th>
+                <th style="padding: 10px; border-bottom: 1px solid #ddd;">Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in region_sales %}
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ sale.region }}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹{{ sale.total_sales|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">No data available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2 style="color: #333; margin-top: 30px;">High-Value Products (Sales > ₹10,000)</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; color: #333;">
+                <th style="padding: 10px; border-bottom: 1px solid #ddd;">Product ID</th>
+                <th style="padding: 10px; border-bottom: 1px solid #ddd;">Average Price Per Unit</th>
+                <th style="padding: 10px; border-bottom: 1px solid #ddd;">Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in high_sales %}
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ product.product_id }}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹{{ product.average_price_per_unit|floatformat:2 }}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹{{ product.total_sales|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">No data available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
